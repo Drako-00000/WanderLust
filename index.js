@@ -21,8 +21,7 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const userRouter = require("./routes/user.js");
 
-const dbURL = 'mongodb://127.0.0.1:27017/wanderlust';
-// const dbURL = process.env.ATLASDB_URL;
+const dbURL = process.env.ATLASDB_URL || 'mongodb://127.0.0.1:27017/wanderlust';
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({extended: true}));
@@ -39,7 +38,7 @@ const store = MongoStore.create({
     touchAfter: 24*3600,
 })
 
-store.on("error", ()=>{
+store.on("error", (err)=>{
     console.log("ERROR in MONGO SESSION STORE", err);
 })
 
@@ -110,6 +109,7 @@ app.use((err,req,res,next) => {
     res.status(statusCode).render("error.ejs", {err});
 });
 
-app.listen(8080, ()=>{
-    console.log("Server is connected to port 8080");
-})
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
