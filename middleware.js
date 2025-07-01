@@ -14,8 +14,9 @@ module.exports.isLoggedIn = (req, res, next) => {
 
 module.exports.saveRedirectUrl = (req,res,next) => {
     if(req.session.redirectUrl){
-        res.local.redirectUrl = req.session.redirectUrl;
+        res.locals.redirectUrl = req.session.redirectUrl;
     }
+    next();
 }
 
 module.exports.isOwner = async(req,res,next)=>{
@@ -31,7 +32,7 @@ module.exports.isOwner = async(req,res,next)=>{
 module.exports.isAuthor = async(req,res,next)=>{
     let{id, reviewId} = req.params;
     let review = await Review.findById(reviewId);
-    if(!review.author.equals(res.locals.currUser._id)){
+    if (!review.author.equals(req.user._id)){
         req.flash("error", "You are not the author of this review");
         return res.redirect(`/listings/${id}`);
     }

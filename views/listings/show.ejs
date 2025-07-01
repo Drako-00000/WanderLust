@@ -7,7 +7,11 @@
     <div class="card col-6 offset-3 show-card listing-card">
         <img src="<%=listing.image.url%>" class="card-img-top show-img" alt="listing_image">
         <div class="card-body">
-            <p class="card-text"><i> Owned By: <%=listing.owner.username%> </i></p>
+            <% if (listing.owner) { %>
+                <p class="card-text"><i> Owned By: <%= listing.owner.username %> </i></p>
+                <% } else { %>
+                <p class="card-text"><i> Owner: Unknown </i></p>
+            <% } %>
             <p class="card-text"> <%=listing.description%> </p>
             <p class="card-text"> &#8377; <%=listing.price.toLocaleString("en-IN")%> </p>
             <p class="card-text"> <%=listing.location%> </p>
@@ -15,7 +19,7 @@
         </div>
     </div>
     </div>
-    <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+    <% if (currUser && listing.owner && currUser._id.toString() === listing.owner._id.toString()) { %>
         <div class="btns">
             <a href="/listings/<%=listing._id%>/edit" class="btn btn-dark col-2 offset-3 edit-btn">Edit</a>
         
@@ -68,17 +72,65 @@
         <% for(review of listing.reviews) { %>
             <div class="card col-5 ms-3 mb-3">
                 <div class="card-body">
-                    <h5 class="crad-title">@<%=review.author.username%></h5>
+                    <% if (review.author) { %>
+                        <h5 class="card-title">@<%= review.author.username %></h5>
+                    <% } else { %>
+                        <h5 class="card-title">@Anonymous</h5>
+                    <% } %>
                     <p class="starability-result" data-rating="<%=review.rating%>"></p>
                     <p class="card-text"><%=review.comment%></p>
                     <!-- <p class="card-text"><%=review.rating%> stars</p> -->
                 </div>
                 <form method="POST" action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE" class="mb-3">
-                    <button class="btn btn-sm btn-dark">Delete</button>
+                    <% if (currUser._id.toString() === review.author._id.toString()) { %>
+                        <button class="btn btn-sm btn-dark">Delete</button>
+                    <% } %>    
                 </form>
             </div>
         <% } %> 
         </div>
         <% } %>   
     </div>
+    <div class="col-8 offset-3 mb-3">
+        <h4>Where you'll be</h4>
+        <div id="map" style="height: 400px;"></div>
+    </div>
+    <script>
+    async function getCoordinates(city) {
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`;
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'airbnb-clone-student-project'
+            }
+        });
+        const data = await response.json();
+        if (data.length === 0) {
+            throw new Error("City not found");
+        }
+        const { lat, lon } = data[0];
+        return { lat: parseFloat(lat), lon: parseFloat(lon) };
+    }
+
+    async function showMap() {
+        const city = "<%= listing.location %>"; // EJS value passed from server
+        try {
+            const { lat, lon } = await getCoordinates(city);
+            const map = L.map('map').setView([lat, lon], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup("<b><%= listing.title %></b><br><%= listing.location %>")
+                .openPopup();
+        } catch (error) {
+            console.error(error);
+            document.getElementById('map').innerText = "Unable to load map.";
+        }
+    }
+
+    showMap();
+</script>
+
 </body>

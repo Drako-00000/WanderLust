@@ -3,7 +3,7 @@
     <div class="rows mt-3">
         <div class="col-8 offset-2">
             <h3>Edit Your Listing</h3>
-            <form action="/listings<%=listing._id%>?_method=PUT" enctype="multipart/form-data" method="POST" novalidate class="needs-validation">
+            <form action="/listings/<%=listing._id%>?_method=PUT" enctype="multipart/form-data" method="POST" novalidate class="needs-validation">
                 <div class="mb-3">
                     <label class="form-label" for="title">Title</label>
                     <input name="listing[title]" class="form-control" value="<%=listing.title%>" required type="text">
@@ -35,7 +35,7 @@
     
                     <div class="mb-3 col-md-8">
                         <label class="form-label" for="country">Country</label>
-                        <input name="lisitng[country]" required class="form-control" value="<%=listing.country%>" type="text">
+                        <input name="listing[country]" required class="form-control" value="<%=listing.country%>" type="text">
                         <div class="invalid-feedback">Please Enter Country Name</div>
                     </div>
                 </div>

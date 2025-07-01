@@ -60,7 +60,7 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session()); //a web application needs to identify users as they browse from page to page. This series of requests and responses, each associated with the same user, is known as a session
-passport.use(new LocalStrategy(User.authenticate));
+passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -86,9 +86,9 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-// app.get("/", (req,res)=>{
-//     res.redirect("/listings");
-// });
+app.get("/", (req,res)=>{
+    res.redirect("/listings");
+});
 
 // app.get("/demouser", async(req,res) => {
 //     let fakeUser = new User({
