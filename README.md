@@ -47,5 +47,5 @@ A full-stack Node.js application for managing travel listings — create, view, 
        The app runs on http://localhost:8080
    
 Author
-Made by Satyam Pandey (https://github.com/Drako-00000)
+ Satyam Pandey (https://github.com/Drako-00000)
 
